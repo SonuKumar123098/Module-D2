@@ -94,3 +94,64 @@ class DSU{
         return size[k];
     }
 }
+// 2nd approach
+class Solution {
+    int groups[][];
+    int[][]dirn=new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
+    public int largestIsland(int[][] grid) {
+        int n=grid.length;
+        groups=new int[n][n];
+        HashMap<Integer,Integer>group=new HashMap<>();
+        int groupNo=1;
+        int ans=0;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                if(grid[i][j]==1 && groups[i][j]==0){
+                    int area=dfs(grid,i,j,groupNo);
+                    group.put(groupNo,area);
+                    groupNo++;
+                    ans=Math.max(ans,area);
+                }
+            }
+        }
+        HashSet<Integer>hs=new HashSet<>();
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                if(grid[i][j]==0){
+                    int val=1;
+                    for(int d=0;d<4;d++){
+                        int x=dirn[d][0]+i;
+                        int y=dirn[d][1]+j;
+                        if(isValid(x,y,grid)){
+                            int a=groups[x][y];
+                            if(!hs.contains(a))
+                            val+=group.get(a);
+                            hs.add(a);
+                        }
+                    }
+                    hs.clear();
+                    ans=Math.max(ans,val);
+                }
+            }
+        }
+        return ans;
+    }
+    private int dfs(int[][] grid,int i,int j,int groupNo){
+        groups[i][j]=groupNo;
+        int n=grid.length;
+        int cnt=1;
+        for(int d=0;d<4;d++){
+            int x=dirn[d][0]+i;
+            int y=dirn[d][1]+j;
+            if(isValid(x,y,grid) && groups[x][y]==0){
+               cnt+= dfs(grid,x,y,groupNo);
+            }
+        }
+        return cnt;
+    }
+    private boolean isValid(int i,int j,int [][]grid){
+        int n=grid.length;
+        if(i<0 || j<0 || i>=n || j>=n  || grid[i][j]==0)return false;
+        return true;
+    }
+}
